@@ -1,0 +1,45 @@
+function [distr, bin_starts, bin_centres] = eHist(x,num_bins)
+% function [distr, bin_starts, bin_centres] = eHist(x,num_bins) is get the evenly sampled
+% histogram over x. The bin_starts are edges of the bins such that all
+% elements of distr are equal. The bin centres are the average values of
+% the value of x in each bin.
+%
+% 2011-09 Aman
+% 2015-01 Added a line to avoid repetition of the same number in the
+% starts.
+
+if nargin<2
+    num_bins = 10;
+end
+
+
+sorted_x = sort(x);
+sorted_x(isnan(sorted_x)) = [];
+if num_bins<length(sorted_x)
+    bin_sample_size = floor(length(sorted_x)/(num_bins-1));
+else
+    bin_sample_size = 1;
+    num_bins = length(sorted_x);
+end
+
+bin_starts = sorted_x(1:bin_sample_size:end);
+% added this in case the same edge is repeated.
+bin_starts(diff(bin_starts)==0) = [];
+if length(bin_starts)>1
+    bin_starts(end) = Inf;
+end
+distr = histc(x, bin_starts);
+distr = distr(1:end -1);
+
+if nargout<1
+    bar(bin_starts(1:end -1), distr,'histc');
+end
+if nargout>2
+    idx = 1;
+    is bin_starts
+    for n = 1:(length(bin_starts)-1)
+        bin_centres(n) = mean(x(x>=bin_starts(n) & x<bin_starts(n+1)));
+        idx = idx+bin_sample_size;
+    end
+end
+end
